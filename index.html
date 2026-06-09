@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SAHIL X AI — Premium AI Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<style>
+:root{
+  --bg:#020208;--bg2:#06060f;--bg3:#0a0a18;
+  --glass:rgba(255,255,255,0.03);--glass2:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.06);--border2:rgba(139,92,246,0.4);
+  --purple:#8b5cf6;--purple2:#a78bfa;--blue:#3b82f6;--blue2:#60a5fa;
+  --cyan:#06b6d4;--pink:#ec4899;--green:#10b981;--red:#ef4444;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --neon-purple:0 0 20px rgba(139,92,246,0.5),0 0 60px rgba(139,92,246,0.2);
+  --neon-cyan:0 0 20px rgba(6,182,212,0.5),0 0 40px rgba(6,182,212,0.2);
+  --neon-pink:0 0 20px rgba(236,72,153,0.5);
+  --radius:16px;--radius2:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--purple);border-radius:10px;}
+
+.page{display:none;min-height:100vh;position:relative;}
+.page.active{display:flex;flex-direction:column;}
+
+#particle-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+
+.grad-bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.grad-orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:0.1;}
+.o1{width:700px;height:700px;background:radial-gradient(circle,var(--purple),transparent);top:-250px;left:-250px;animation:orbFloat 8s ease-in-out infinite;}
+.o2{width:600px;height:600px;background:radial-gradient(circle,var(--blue),transparent);bottom:-200px;right:-200px;animation:orbFloat 10s ease-in-out infinite reverse;}
+.o3{width:400px;height:400px;background:radial-gradient(circle,var(--pink),transparent);top:40%;left:40%;animation:orbFloat 12s ease-in-out infinite 2s;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0);}50%{transform:translate(25px,-18px);}}
+
+/* Logo Floating Animation */
+.logo-float{animation:logoFloat 2.5s ease-in-out infinite;}
+@keyframes logoFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-3px) scale(1.02);}}
+
+/* Anime Mascot */
+.anime-mascot{position:fixed;top:12px;right:16px;width:100px;z-index:5;pointer-events:none;animation:mascotBounce 3s ease-in-out infinite;}
+@keyframes mascotBounce{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-8px) rotate(1deg);}50%{transform:translateY(-14px) rotate(0deg);}75%{transform:translateY(-6px) rotate(-1deg);}}
+
+/* Glow pulse */
+@keyframes glowPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(139,92,246,0.4));}50%{filter:drop-shadow(0 0 16px rgba(236,72,153,0.6));}}
+.mascot-glow{animation:glowPulse 2s ease-in-out infinite;}
+
+/* Shimmer effect */
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* Star twinkle */
+@keyframes twinkle{0%,100%{opacity:0.3;}50%{opacity:1;}}
+
+/* Welcome */
+#welcome{background:var(--bg);justify-content:center;align-items:center;text-align:center;z-index:100;}
+.welcome-inner{position:relative;z-index:2;padding:2rem;}
+.welcome-logo{font-family:'Orbitron',monospace;font-size:clamp(2rem,6vw,4rem);font-weight:900;
+  background:linear-gradient(135deg,var(--purple),var(--pink),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:logoGlow 2s ease-in-out infinite alternate;letter-spacing:0.08em;}
+@keyframes logoGlow{
+  from{filter:drop-shadow(0 0 15px rgba(139,92,246,0.9));}
+  to{filter:drop-shadow(0 0 40px rgba(236,72,153,0.8));}}
+.welcome-title{font-size:clamp(2rem,6vw,3.5rem);font-weight:700;margin:0.75rem 0;
+  background:linear-gradient(135deg,#fff,var(--purple2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:fadeUp 0.8s ease forwards;opacity:0;animation-delay:0.3s;}
+.welcome-sub{font-size:1rem;color:var(--text2);animation:fadeUp 0.8s ease forwards;opacity:0;animation-delay:0.6s;}
+.welcome-bar{width:200px;height:2px;background:rgba(255,255,255,0.08);border-radius:10px;margin:2rem auto;overflow:hidden;
+  animation:fadeUp 0.8s ease forwards;opacity:0;animation-delay:0.9s;}
+.welcome-bar-inner{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink),var(--cyan));animation:barLoad 3s ease forwards;}
+@keyframes barLoad{from{width:0;}to{width:100%;}}
+.welcome-rings{position:absolute;inset:-120px;pointer-events:none;}
+.ring{position:absolute;border-radius:50%;border:1px solid;animation:ringPulse 3s ease-in-out infinite;}
+.ring:nth-child(1){inset:20%;border-color:rgba(139,92,246,0.2);animation-delay:0s;}
+.ring:nth-child(2){inset:10%;border-color:rgba(236,72,153,0.12);animation-delay:0.6s;}
+.ring:nth-child(3){inset:0%;border-color:rgba(6,182,212,0.08);animation-delay:1.2s;}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.3;}50%{transform:scale(1.06);opacity:0.8;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.welcome-emoji{font-size:3.5rem;animation:fadeUp 0.8s ease forwards;opacity:0;animation-delay:1.1s;}
+
+/* Header */
+.header{background:rgba(2,2,8,0.92);backdrop-filter:blur(24px);border-bottom:1px solid rgba(139,92,246,0.12);
+  position:sticky;top:0;z-index:50;padding:0 1.5rem;height:58px;display:flex;align-items:center;justify-content:space-between;}
+.header-logo{font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:700;
+  background:linear-gradient(135deg,var(--purple2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;cursor:pointer;
+  animation:logoFloat 2.5s ease-in-out infinite;}
+.header-logo:hover{filter:drop-shadow(0 0 12px rgba(236,72,153,0.8));}
+.header-nav{display:flex;gap:0.4rem;}
+.nav-btn{background:transparent;border:1px solid transparent;color:var(--text3);
+  padding:0.3rem 0.65rem;border-radius:7px;cursor:pointer;font-size:0.76rem;transition:all 0.2s;font-family:inherit;}
+.nav-btn:hover{background:var(--glass2);border-color:var(--border);color:var(--text2);}
+.nav-btn.active{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.25);color:var(--purple2);}
+
+/* Dashboard */
+#dash-scroll{flex:1;overflow-y:auto;}
+.dash-hero{text-align:center;padding:3.5rem 1rem 2rem;position:relative;z-index:1;}
+.dash-tag{font-size:1.8rem;margin-bottom:0.5rem;}
+.dash-title{font-family:'Orbitron',monospace;font-size:clamp(2rem,5vw,3rem);font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--purple2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.6rem;}
+.dash-sub{color:var(--text2);font-size:0.92rem;max-width:460px;margin:0 auto 1.2rem;}
+.status-bar{display:inline-flex;align-items:center;gap:0.5rem;background:rgba(16,185,129,0.07);
+  border:1px solid rgba(16,185,129,0.18);border-radius:20px;padding:0.3rem 1rem;font-size:0.76rem;color:var(--green);}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:1rem;
+  max-width:840px;margin:0 auto 2rem;padding:0 1.5rem;z-index:1;position:relative;}
+.stat-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--radius2);
+  padding:1rem;text-align:center;transition:all 0.2s;}
+.stat-card:hover{border-color:rgba(139,92,246,0.25);background:var(--glass2);}
+.stat-num{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;
+  background:linear-gradient(135deg,var(--purple2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-label{font-size:0.66rem;color:var(--text3);margin-top:0.2rem;text-transform:uppercase;letter-spacing:0.06em;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;
+  max-width:840px;margin:2rem auto;padding:0 1.5rem;z-index:1;position:relative;}
+.mode-card{background:linear-gradient(145deg,rgba(255,255,255,0.025),rgba(255,255,255,0.01));
+  border:1px solid var(--border);border-radius:var(--radius);padding:2rem;
+  cursor:pointer;transition:all 0.35s;position:relative;overflow:hidden;}
+.mode-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(139,92,246,0.06),rgba(236,72,153,0.04));opacity:0;transition:opacity 0.3s;}
+.mode-card::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(139,92,246,0.8),transparent);transition:left 0.6s;}
+.mode-card:hover{transform:translateY(-8px) scale(1.01);border-color:var(--purple);
+  box-shadow:0 24px 60px rgba(139,92,246,0.15),var(--neon-purple);}
+.mode-card:hover::before{opacity:1;}
+.mode-card:hover::after{left:100%;}
+.mode-card.jailbreak:hover{border-color:var(--cyan);
+  box-shadow:0 24px 60px rgba(6,182,212,0.15),var(--neon-cyan);}
+.card-icon{font-size:2.8rem;margin-bottom:1rem;display:block;}
+.card-title{font-family:'Orbitron',monospace;font-size:1.15rem;font-weight:700;margin-bottom:0.5rem;
+  background:linear-gradient(135deg,#fff,var(--purple2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.mode-card.jailbreak .card-title{background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.card-desc{color:var(--text2);font-size:0.86rem;line-height:1.7;margin-bottom:1.25rem;}
+.card-badge{display:inline-flex;align-items:center;gap:0.4rem;
+  background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);
+  border-radius:20px;padding:0.22rem 0.7rem;font-size:0.7rem;color:var(--purple2);}
+.mode-card.jailbreak .card-badge{background:rgba(6,182,212,0.08);border-color:rgba(6,182,212,0.2);color:var(--cyan);}
+
+/* Sidebar */
+.chat-layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 58px);}
+.sidebar{width:252px;flex-shrink:0;background:rgba(3,3,10,0.97);backdrop-filter:blur(20px);
+  border-right:1px solid rgba(255,255,255,0.04);display:flex;flex-direction:column;transition:transform 0.3s;}
+.sidebar-header{padding:1rem;border-bottom:1px solid var(--border);}
+.sb-title{font-family:'Orbitron',monospace;font-size:0.7rem;color:var(--text3);
+  text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.7rem;}
+.new-chat-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--blue));
+  border:none;color:#fff;padding:0.5rem;border-radius:8px;cursor:pointer;
+  font-family:inherit;font-size:0.82rem;font-weight:600;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;}
+.new-chat-btn:hover{opacity:0.85;box-shadow:var(--neon-purple);}
+.sb-search{width:100%;background:var(--glass);border:1px solid var(--border);color:var(--text);
+  padding:0.4rem 0.65rem;border-radius:7px;font-size:0.76rem;margin-top:0.5rem;font-family:inherit;outline:none;}
+.sb-search:focus{border-color:var(--purple);}
+.sb-search::placeholder{color:var(--text3);}
+
+.model-selector{padding:1rem;border-bottom:1px solid var(--border);}
+.model-label{font-size:0.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.5rem;}
+.model-btn{width:100%;background:transparent;border:1px solid transparent;color:var(--text3);
+  padding:0.42rem 0.65rem;border-radius:7px;cursor:pointer;font-size:0.76rem;
+  margin-bottom:0.28rem;transition:all 0.2s;display:flex;align-items:center;gap:0.5rem;font-family:inherit;text-align:left;}
+.model-btn:hover{background:var(--glass2);border-color:var(--border);color:var(--text2);}
+.model-btn.active{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.28);color:var(--purple2);}
+.model-btn .dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 5px var(--green);}
+
+.chat-history{flex:1;overflow-y:auto;padding:0.5rem;}
+.hist-item{padding:0.5rem 0.65rem;border-radius:7px;cursor:pointer;font-size:0.76rem;color:var(--text3);
+  transition:all 0.2s;display:flex;align-items:center;gap:0.4rem;margin-bottom:0.18rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border:1px solid transparent;}
+.hist-item:hover{background:var(--glass2);color:var(--text2);border-color:var(--border);}
+.hist-item.active{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.22);color:var(--purple2);}
+.hist-item .delbtn{margin-left:auto;opacity:0;padding:0.1rem 0.28rem;border-radius:4px;
+  background:rgba(239,68,68,0.12);border:none;color:var(--red);cursor:pointer;font-size:0.65rem;flex-shrink:0;}
+.hist-item:hover .delbtn{opacity:1;}
+.hist-empty{text-align:center;padding:2rem 1rem;color:var(--text3);font-size:0.76rem;}
+
+.sb-footer{padding:0.8rem;border-top:1px solid var(--border);}
+.sb-stats{font-size:0.68rem;color:var(--text3);}
+.sb-stat-row{display:flex;justify-content:space-between;margin-bottom:0.18rem;}
+.sb-stat-val{color:var(--purple2);font-family:'JetBrains Mono',monospace;}
+
+/* Chat Main */
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.chat-topbar{padding:0.75rem 1.4rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(2,2,8,0.88);backdrop-filter:blur(12px);}
+.model-info{display:flex;align-items:center;gap:0.7rem;}
+.model-av{width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:var(--neon-purple);}
+.model-nm{font-weight:600;font-size:0.86rem;}
+.model-st{font-size:0.7rem;color:var(--green);display:flex;align-items:center;gap:0.3rem;}
+.topbar-btns{display:flex;gap:0.4rem;}
+.icon-btn{background:var(--glass);border:1px solid var(--border);color:var(--text3);
+  width:30px;height:30px;border-radius:7px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:all 0.2s;font-size:0.82rem;}
+.icon-btn:hover{background:var(--glass2);border-color:var(--border2);color:var(--text);}
+.hamburger{display:none;}
+
+/* Messages */
+.msgs-wrap{flex:1;overflow-y:auto;padding:1.25rem;display:flex;flex-direction:column;gap:1.2rem;}
+.msg{display:flex;gap:0.85rem;animation:msgIn 0.35s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.msg.user{flex-direction:row-reverse;}
+.msg-av{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.95rem;}
+.msg.ai .msg-av{background:linear-gradient(135deg,var(--purple),var(--pink));box-shadow:var(--neon-purple);}
+.msg.user .msg-av{background:linear-gradient(135deg,var(--blue),var(--cyan));}
+.msg-cnt{max-width:78%;}
+.msg.user .msg-cnt{align-items:flex-end;display:flex;flex-direction:column;}
+.msg-bub{padding:0.85rem 1rem;border-radius:var(--radius);line-height:1.7;font-size:0.86rem;}
+.msg.ai .msg-bub{background:linear-gradient(145deg,rgba(139,92,246,0.05),rgba(59,130,246,0.03));
+  border:1px solid rgba(139,92,246,0.12);border-top-left-radius:4px;}
+.msg.user .msg-bub{background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(59,130,246,0.15));
+  border:1px solid rgba(139,92,246,0.28);border-top-right-radius:4px;}
+.msg-time{font-size:0.65rem;color:var(--text3);margin-top:0.25rem;padding:0 0.15rem;}
+.msg-acts{display:flex;gap:0.22rem;margin-top:0.35rem;opacity:0;transition:opacity 0.2s;}
+.msg:hover .msg-acts{opacity:1;}
+.act-btn{background:var(--glass);border:1px solid var(--border);color:var(--text3);
+  padding:0.18rem 0.45rem;border-radius:4px;cursor:pointer;font-size:0.65rem;transition:all 0.15s;font-family:inherit;}
+.act-btn:hover{background:var(--glass2);color:var(--text);}
+
+/* Markdown */
+.msg-bub pre{background:rgba(0,0,0,0.5);border-radius:10px;padding:1rem;overflow-x:auto;margin:0.75rem 0;border:1px solid rgba(139,92,246,0.18);}
+.msg-bub code:not(pre code){background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.18);
+  border-radius:4px;padding:0.1rem 0.38rem;font-family:'JetBrains Mono',monospace;font-size:0.82em;color:var(--purple2);}
+.msg-bub p{margin-bottom:0.5rem;}.msg-bub p:last-child{margin-bottom:0;}
+.msg-bub ul,.msg-bub ol{padding-left:1.25rem;margin-bottom:0.5rem;}
+.msg-bub h1,.msg-bub h2,.msg-bub h3{color:var(--purple2);margin:0.75rem 0 0.25rem;font-family:'Orbitron',monospace;}
+.msg-bub strong{color:var(--blue2);}
+.msg-bub a{color:var(--cyan);text-decoration:underline;}
+.msg-bub blockquote{border-left:3px solid var(--purple);padding-left:1rem;color:var(--text2);margin:0.5rem 0;}
+.msg-bub table{width:100%;border-collapse:collapse;margin:0.5rem 0;}
+.msg-bub th,.msg-bub td{border:1px solid var(--border);padding:0.38rem 0.65rem;}
+.msg-bub th{background:var(--glass2);color:var(--purple2);}
+
+.typing-ind{display:flex;gap:0.38rem;align-items:center;padding:0.35rem 0;}
+.tydot{width:7px;height:7px;border-radius:50%;animation:typeBounce 1.2s infinite;}
+.tydot:nth-child(1){background:var(--purple2);}
+.tydot:nth-child(2){background:var(--pink);animation-delay:0.2s;}
+.tydot:nth-child(3){background:var(--cyan);animation-delay:0.4s;}
+@keyframes typeBounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
+
+.empty-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;color:var(--text3);}
+.empty-icon{font-size:3.5rem;margin-bottom:0.5rem;animation:floatIcon 3s ease-in-out infinite;}
+@keyframes floatIcon{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.empty-title{font-family:'Orbitron',monospace;font-size:0.95rem;color:var(--text2);margin-bottom:0.5rem;}
+.empty-sub{font-size:0.82rem;max-width:360px;line-height:1.6;}
+.chips{display:flex;flex-wrap:wrap;gap:0.45rem;justify-content:center;margin-top:1.4rem;}
+.chip{background:var(--glass);border:1px solid var(--border);color:var(--text2);
+  padding:0.35rem 0.8rem;border-radius:20px;cursor:pointer;font-size:0.76rem;transition:all 0.2s;font-family:inherit;}
+.chip:hover{background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.25);color:var(--purple2);}
+
+/* Input */
+.input-area{padding:0.9rem 1.4rem;border-top:1px solid var(--border);background:rgba(2,2,8,0.92);backdrop-filter:blur(12px);}
+.input-wrap{display:flex;align-items:flex-end;gap:0.65rem;
+  background:rgba(139,92,246,0.05);border:1px solid rgba(139,92,246,0.18);
+  border-radius:var(--radius);padding:0.65rem;transition:all 0.2s;}
+.input-wrap:focus-within{border-color:var(--purple);box-shadow:0 0 0 2px rgba(139,92,246,0.07),var(--neon-purple);}
+.chat-input{flex:1;background:none;border:none;color:var(--text);font-size:0.86rem;
+  resize:none;outline:none;font-family:inherit;max-height:120px;min-height:24px;line-height:1.5;}
+.chat-input::placeholder{color:var(--text3);}
+.input-btns{display:flex;gap:0.38rem;flex-shrink:0;}
+.att-btn{background:var(--glass);border:1px solid var(--border);color:var(--text3);
+  width:32px;height:32px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;font-size:0.82rem;}
+.att-btn:hover{background:var(--glass2);color:var(--text);}
+.send-btn{background:linear-gradient(135deg,var(--purple),var(--pink));border:none;color:#fff;
+  width:32px;height:32px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;font-size:0.9rem;box-shadow:var(--neon-purple);}
+.send-btn:hover{opacity:0.85;transform:scale(1.08);}
+.send-btn:disabled{opacity:0.32;cursor:not-allowed;transform:none;box-shadow:none;}
+.input-foot{display:flex;justify-content:space-between;align-items:center;margin-top:0.38rem;font-size:0.66rem;color:var(--text3);}
+
+/* JB Model Cards */
+.jb-models-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:1.25rem;
+  max-width:820px;margin:2rem auto;padding:0 1.5rem;z-index:1;position:relative;}
+.jb-card{background:linear-gradient(145deg,rgba(6,182,212,0.04),rgba(255,255,255,0.015));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.75rem;text-align:center;transition:all 0.35s;position:relative;overflow:hidden;}
+.jb-card::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(6,182,212,0.07),transparent);opacity:0;transition:opacity 0.3s;}
+.jb-card.available:hover{border-color:var(--cyan);transform:translateY(-6px);
+  box-shadow:0 20px 50px rgba(6,182,212,0.12),var(--neon-cyan);}
+.jb-card.available:hover::before{opacity:1;}
+.jb-card.locked{opacity:0.42;}
+.jb-icon{font-size:2.5rem;margin-bottom:0.7rem;display:block;}
+.jb-name{font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:700;margin-bottom:0.5rem;}
+.jb-badge{display:inline-flex;align-items:center;gap:0.35rem;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.7rem;margin-bottom:0.9rem;}
+.jb-badge.ok{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:var(--green);}
+.jb-badge.no{background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.2);color:var(--text3);}
+.jb-preview{font-size:0.7rem;color:var(--text3);font-family:'JetBrains Mono',monospace;
+  background:var(--glass);border:1px solid var(--border);border-radius:6px;padding:0.45rem;margin-bottom:0.75rem;
+  text-align:left;max-height:52px;overflow:hidden;white-space:pre-wrap;word-break:break-all;}
+.jb-start-btn{background:linear-gradient(135deg,var(--cyan),var(--blue));border:none;color:#fff;
+  padding:0.48rem 1.2rem;border-radius:8px;cursor:pointer;font-size:0.78rem;font-weight:600;
+  transition:all 0.2s;font-family:inherit;}
+.jb-start-btn:hover{opacity:0.85;box-shadow:var(--neon-cyan);}
+.jb-start-btn:disabled{opacity:0.32;cursor:not-allowed;box-shadow:none;}
+
+/* Admin */
+#admin-login{justify-content:center;align-items:center;}
+.login-card{background:linear-gradient(145deg,rgba(139,92,246,0.06),rgba(255,255,255,0.015));
+  backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,0.18);
+  border-radius:var(--radius);padding:2.5rem;max-width:400px;width:90%;z-index:1;text-align:center;}
+.login-logo{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;
+  background:linear-gradient(135deg,var(--purple2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.4rem;}
+.login-sub{color:var(--text3);font-size:0.8rem;margin-bottom:1.75rem;}
+.form-group{text-align:left;margin-bottom:1rem;}
+.form-label{font-size:0.76rem;color:var(--text2);margin-bottom:0.38rem;display:block;}
+.form-input{width:100%;background:var(--glass2);border:1px solid var(--border);color:var(--text);
+  padding:0.62rem 1rem;border-radius:8px;font-size:0.86rem;outline:none;font-family:inherit;transition:border-color 0.2s;}
+.form-input:focus{border-color:var(--purple);}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--purple),var(--pink));border:none;color:#fff;
+  padding:0.7rem;border-radius:8px;cursor:pointer;font-size:0.86rem;font-weight:600;
+  font-family:inherit;transition:all 0.2s;margin-top:0.5rem;}
+.login-btn:hover{opacity:0.85;box-shadow:var(--neon-purple);}
+.login-error{color:var(--red);font-size:0.76rem;margin-top:0.4rem;display:none;}
+
+#admin-panel{flex:1;overflow-y:auto;}
+.admin-header{background:rgba(2,2,8,0.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0.9rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.admin-title{font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:700;
+  background:linear-gradient(135deg,var(--purple2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.admin-body{padding:1.5rem;max-width:1050px;margin:0 auto;}
+.admin-tabs{display:flex;gap:0.4rem;margin-bottom:1.75rem;flex-wrap:wrap;}
+.atab{background:var(--glass);border:1px solid var(--border);color:var(--text2);
+  padding:0.42rem 0.95rem;border-radius:8px;cursor:pointer;font-size:0.8rem;transition:all 0.2s;font-family:inherit;}
+.atab:hover{background:var(--glass2);color:var(--text);}
+.atab.active{background:rgba(139,92,246,0.12);border-color:var(--purple);color:var(--purple2);}
+.asec{display:none;}.asec.active{display:block;}
+
+.analytics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.75rem;}
+.a-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--radius2);padding:1.2rem;}
+.a-label{font-size:0.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.45rem;}
+.a-val{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:700;
+  background:linear-gradient(135deg,var(--purple2),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.a-sub{font-size:0.7rem;color:var(--text3);margin-top:0.2rem;}
+
+.admin-table{width:100%;border-collapse:collapse;}
+.admin-table th{background:var(--glass2);border:1px solid var(--border);padding:0.65rem;
+  font-size:0.76rem;color:var(--text2);text-align:left;font-weight:600;}
+.admin-table td{border:1px solid var(--border);padding:0.65rem;font-size:0.8rem;color:var(--text);}
+.admin-table tr:hover td{background:var(--glass);}
+
+.jb-manager{display:flex;flex-direction:column;gap:0.9rem;}
+.jb-item{background:var(--glass);border:1px solid var(--border);border-radius:var(--radius2);padding:1.2rem;}
+.jb-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem;}
+.jb-item-name{font-weight:600;font-size:0.88rem;display:flex;align-items:center;gap:0.5rem;}
+.jb-item-actions{display:flex;gap:0.45rem;}
+.action-btn{background:var(--glass);border:1px solid var(--border);color:var(--text2);
+  padding:0.25rem 0.62rem;border-radius:5px;cursor:pointer;font-size:0.7rem;transition:all 0.2s;font-family:inherit;}
+.action-btn:hover{background:var(--glass2);color:var(--text);}
+.action-btn.danger{border-color:rgba(239,68,68,0.28);color:var(--red);}
+.action-btn.danger:hover{background:rgba(239,68,68,0.07);}
+.action-btn.success{border-color:rgba(16,185,129,0.28);color:var(--green);}
+.action-btn.success:hover{background:rgba(16,185,129,0.07);}
+.jb-textarea{width:100%;background:var(--glass2);border:1px solid var(--border);color:var(--text);
+  padding:0.7rem;border-radius:8px;font-size:0.76rem;resize:vertical;min-height:78px;
+  outline:none;font-family:'JetBrains Mono',monospace;margin-top:0.45rem;line-height:1.5;}
+.jb-textarea:focus{border-color:var(--purple);}
+.jb-sbadge{padding:0.16rem 0.5rem;border-radius:20px;font-size:0.65rem;}
+.jb-sbadge.on{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:var(--green);}
+.jb-sbadge.off{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);color:var(--red);}
+.save-btn{background:linear-gradient(135deg,var(--purple),var(--pink));border:none;color:#fff;
+  padding:0.42rem 0.9rem;border-radius:8px;cursor:pointer;font-size:0.76rem;font-weight:600;
+  font-family:inherit;transition:all 0.2s;margin-top:0.45rem;}
+.save-btn:hover{opacity:0.85;}
+
+.log-item{background:var(--glass);border:1px solid var(--border);border-radius:8px;
+  padding:0.65rem;margin-bottom:0.45rem;font-size:0.76rem;font-family:'JetBrains Mono',monospace;}
+.log-item.error{border-color:rgba(239,68,68,0.25);}
+.log-time{color:var(--text3);font-size:0.65rem;}
+.log-msg{color:var(--text);margin-top:0.2rem;}
+.log-item.error .log-msg{color:var(--red);}
+
+/* Footer */
+.footer{padding:1.4rem;text-align:center;border-top:1px solid var(--border);
+  background:rgba(2,2,8,0.8);font-size:0.76rem;color:var(--text3);}
+.footer-links{display:flex;justify-content:center;gap:1rem;margin-top:0.65rem;}
+.social-btn{display:inline-flex;align-items:center;gap:0.38rem;background:var(--glass);
+  border:1px solid var(--border);color:var(--text2);padding:0.35rem 0.8rem;
+  border-radius:8px;cursor:pointer;font-size:0.76rem;text-decoration:none;transition:all 0.2s;font-family:inherit;}
+.social-btn:hover{background:var(--glass2);color:var(--text);}
+
+/* Toast */
+#toast-container{position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:0.45rem;}
+.toast{background:rgba(10,10,20,0.96);backdrop-filter:blur(20px);border:1px solid var(--border);
+  border-radius:9px;padding:0.65rem 0.9rem;font-size:0.8rem;color:var(--text);
+  min-width:220px;animation:toastIn 0.3s ease;display:flex;align-items:center;gap:0.45rem;}
+.toast.success{border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.05);}
+.toast.error{border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.05);}
+@keyframes toastIn{from{opacity:0;transform:translateX(22px);}to{opacity:1;transform:translateX(0);}}
+
+/* Sidebar overlay */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:40;}
+.sb-overlay.open{display:block;}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{position:fixed;left:-260px;top:58px;height:calc(100vh - 58px);z-index:45;width:258px;}
+  .sidebar.open{left:0;}
+  .hamburger{display:flex !important;}
+  .cards-grid{grid-template-columns:1fr;}
+  .msg-cnt{max-width:88%;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .jb-models-grid{grid-template-columns:1fr;}
+  .anime-mascot{width:70px;right:8px;top:14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="grad-bg"><div class="grad-orb o1"></div><div class="grad-orb o2"></div><div class="grad-orb o3"></div></div>
+<canvas id="particle-canvas"></canvas>
+<div id="toast-container"></div>
+<div class="sb-overlay" id="sb-overlay" onclick="closeSidebars()"></div>
+
+<!-- Anime Mascot SVG - Top Right -->
+<div class="anime-mascot mascot-glow" id="anime-mascot" style="display:none;">
+<svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gd" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/><stop offset="100%" style="stop-color:#ec4899"/>
+    </linearGradient>
+    <linearGradient id="gs" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fde8d0"/><stop offset="100%" style="stop-color:#f5c2a0"/>
+    </linearGradient>
+  </defs>
+  <!-- dress/body -->
+  <ellipse cx="50" cy="115" rx="25" ry="18" fill="url(#gd)" opacity="0.9"/>
+  <rect x="34" y="78" width="32" height="40" rx="8" fill="url(#gd)"/>
+  <!-- neck -->
+  <rect x="44" y="69" width="12" height="12" rx="4" fill="url(#gs)"/>
+  <!-- head -->
+  <ellipse cx="50" cy="56" rx="20" ry="22" fill="url(#gs)"/>
+  <!-- hair -->
+  <ellipse cx="50" cy="40" rx="22" ry="13" fill="#1a0538"/>
+  <rect x="28" y="40" width="7" height="28" rx="3.5" fill="#1a0538"/>
+  <rect x="65" y="40" width="7" height="28" rx="3.5" fill="#1a0538"/>
+  <ellipse cx="45" cy="37" rx="7" ry="3.5" fill="#3b1278" opacity="0.6"/>
+  <!-- eyes -->
+  <ellipse cx="42" cy="56" rx="4.5" ry="5.5" fill="#1a0538"/>
+  <ellipse cx="58" cy="56" rx="4.5" ry="5.5" fill="#1a0538"/>
+  <ellipse cx="42" cy="55" rx="2.8" ry="3.8" fill="#8b5cf6"/>
+  <ellipse cx="58" cy="55" rx="2.8" ry="3.8" fill="#8b5cf6"/>
+  <circle cx="43" cy="54" r="1.4" fill="white"/>
+  <circle cx="59" cy="54" r="1.4" fill="white"/>
+  <!-- blush -->
+  <ellipse cx="35" cy="62" rx="4.5" ry="2.5" fill="#ec4899" opacity="0.3"/>
+  <ellipse cx="65" cy="62" rx="4.5" ry="2.5" fill="#ec4899" opacity="0.3"/>
+  <!-- smile -->
+  <path d="M46 67 Q50 71 54 67" stroke="#ec4899" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- sparkles with twinkle -->
+  <g style="animation:twinkle 1.5s ease-in-out infinite;">
+    <text x="78" y="22" font-size="12" fill="#a78bfa">✦</text>
+  </g>
+  <g style="animation:twinkle 1.5s ease-in-out infinite;animation-delay:0.3s;">
+    <text x="4" y="45" font-size="9" fill="#06b6d4">✦</text>
+  </g>
+  <g style="animation:twinkle 1.5s ease-in-out infinite;animation-delay:0.6s;">
+    <text x="80" y="65" font-size="7" fill="#ec4899">✦</text>
+  </g>
+</svg>
+</div>
+
+<!-- PAGE: WELCOME -->
+<div class="page active" id="welcome">
+  <div class="welcome-inner">
+    <div class="welcome-rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+    <div class="welcome-emoji">🌸</div>
+    <div class="welcome-logo">SAHIL X AI</div>
+    <div class="welcome-title">Welcome Babe ❤️</div>
+    <div class="welcome-sub">Your Premium AI Experience Awaits~ ✨</div>
+    <div class="welcome-bar"><div class="welcome-bar-inner"></div></div>
+  </div>
+</div>
+
+<!-- PAGE: DASHBOARD -->
+<div class="page" id="dashboard">
+  <header class="header">
+    <div class="header-logo" onclick="goTo('dashboard')">⬡ SAHIL X AI</div>
+    <nav class="header-nav">
+      <button class="nav-btn active" onclick="goTo('dashboard')">🏠 Home</button>
+      <button class="nav-btn" onclick="goTo('chat-page')">💬 Chat</button>
+      <button class="nav-btn" onclick="goTo('jailbreak-page')">⚡ Jailbreak</button>
+      <button class="nav-btn" onclick="goTo('admin-login')">🔐 Admin</button>
+    </nav>
+  </header>
+  <div id="dash-scroll" style="flex:1;overflow-y:auto;">
+    <div class="dash-hero">
+      <div class="dash-tag">🌸 ✨ 🌸</div>
+      <div class="dash-title">SAHIL X AI</div>
+      <div class="dash-sub">Ultra-premium AI chat platform powered by next-gen models~</div>
+      <div class="status-bar"><span class="sdot"></span>All Systems Online · 3 AI Models Ready</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total Chats</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-today">0</div><div class="stat-label">Today</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-rt">--</div><div class="stat-label">Avg ms</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Models Online</div></div>
+    </div>
+    <div class="cards-grid">
+      <div class="mode-card" onclick="goTo('chat-page')">
+        <span class="card-icon">🤖</span>
+        <div class="card-title">Normal Chat</div>
+        <div class="card-desc">Chat with cutting-edge AI models. Ask anything — coding, writing, questions, creativity and more.</div>
+        <div class="card-badge">✦ DeepSeek · Gemini · GPT-5</div>
+      </div>
+      <div class="mode-card jailbreak" onclick="goTo('jailbreak-page')">
+        <span class="card-icon">⚡</span>
+        <div class="card-title">Jailbreak Chat</div>
+        <div class="card-desc">Unlock special system prompts for advanced, unrestricted, and creative AI conversations.</div>
+        <div class="card-badge">✦ Custom System Prompts</div>
+      </div>
+    </div>
+    <footer class="footer">
+      <div>Made with ❤️ by <strong style="color:var(--purple2)">SAHIL X ALONE</strong> 🌸</div>
+      <div class="footer-links">
+        <a class="social-btn" href="https://t.me/sahilxalone" target="_blank">📱 @sahilxalone</a>
+        <a class="social-btn" href="https://instagram.com/just_sahil_621" target="_blank">📸 @just_sahil_621</a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- PAGE: CHAT -->
+<div class="page" id="chat-page">
+  <header class="header">
+    <div style="display:flex;align-items:center;gap:0.65rem;">
+      <button class="icon-btn hamburger" onclick="toggleSidebar('chat-sidebar')">☰</button>
+      <div class="header-logo" onclick="goTo('dashboard')">⬡ SAHIL X AI</div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn" onclick="goTo('dashboard')">🏠</button>
+      <button class="nav-btn" onclick="goTo('jailbreak-page')">⚡ JB</button>
+      <button class="nav-btn" onclick="goTo('admin-login')">🔐</button>
+    </nav>
+  </header>
+  <div class="chat-layout">
+    <aside class="sidebar" id="chat-sidebar">
+      <div class="sidebar-header">
+        <div class="sb-title">💬 Conversations</div>
+        <button class="new-chat-btn" onclick="newChat('normal')">+ New Chat</button>
+        <input class="sb-search" placeholder="🔍 Search..." oninput="renderHistory('normal')" id="search-normal"/>
+      </div>
+      <div class="model-selector">
+        <div class="model-label">⚡ AI Model</div>
+        <button class="model-btn active" onclick="selectModel('deepseek','normal')" id="model-deepseek-normal"><span class="dot"></span>🤖 DeepSeek R1</button>
+        <button class="model-btn" onclick="selectModel('gemini','normal')" id="model-gemini-normal"><span class="dot"></span>🔮 Gemini</button>
+        <button class="model-btn" onclick="selectModel('gpt5','normal')" id="model-gpt5-normal"><span class="dot"></span>⚡ GPT-5</button>
+      </div>
+      <div class="chat-history" id="history-normal"></div>
+      <div class="sb-footer">
+        <div class="sb-stats">
+          <div class="sb-stat-row"><span>Requests</span><span class="sb-stat-val" id="sf-total">0</span></div>
+          <div class="sb-stat-row"><span>Response</span><span class="sb-stat-val" id="sf-rt">--ms</span></div>
+          <div class="sb-stat-row"><span>Model</span><span class="sb-stat-val" id="sf-model">DeepSeek</span></div>
+        </div>
+      </div>
+    </aside>
+    <div class="chat-main">
+      <div class="chat-topbar">
+        <div class="model-info">
+          <div class="model-av" id="model-avatar-normal">🤖</div>
+          <div>
+            <div class="model-nm" id="model-display-normal">DeepSeek R1</div>
+            <div class="model-st"><span class="sdot"></span>Online · Ready</div>
+          </div>
+        </div>
+        <div class="topbar-btns">
+          <button class="icon-btn" onclick="clearChat('normal')">🗑️</button>
+          <button class="icon-btn" onclick="exportChat('normal')">📤</button>
+        </div>
+      </div>
+      <div class="msgs-wrap" id="messages-normal">
+        <div class="empty-chat" id="empty-normal">
+          <div class="empty-icon">🌸</div>
+          <div class="empty-title">Start a Conversation~</div>
+          <div class="empty-sub">Ask me anything! Powered by latest AI models ✨</div>
+          <div class="chips">
+            <button class="chip" onclick="sendSugg('Explain quantum computing simply','normal')">⚛️ Quantum</button>
+            <button class="chip" onclick="sendSugg('Write Python web scraper code','normal')">🐍 Python</button>
+            <button class="chip" onclick="sendSugg('Tell me an anime-style adventure story','normal')">🌸 Anime Story</button>
+            <button class="chip" onclick="sendSugg('Top 10 productivity hacks','normal')">⚡ Productivity</button>
+          </div>
+        </div>
+      </div>
+      <div class="input-area">
+        <div class="input-wrap">
+          <textarea class="chat-input" id="input-normal" placeholder="Message SAHIL X AI~ 🌸" rows="1"
+            onkeydown="handleKey(event,'normal')" oninput="autoResize(this)"></textarea>
+          <div class="input-btns">
+            <button class="att-btn" onclick="toast('🖼️ Image upload coming soon!','success')">📎</button>
+            <button class="send-btn" id="send-normal" onclick="sendMessage('normal')">➤</button>
+          </div>
+        </div>
+        <div class="input-foot">
+          <span id="char-normal"></span>
+          <span>Enter = Send · Shift+Enter = Newline</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: JAILBREAK -->
+<div class="page" id="jailbreak-page">
+  <header class="header">
+    <div style="display:flex;align-items:center;gap:0.65rem;">
+      <button class="icon-btn hamburger" onclick="toggleSidebar('jb-sidebar')">☰</button>
+      <div class="header-logo" onclick="goTo('dashboard')">⬡ SAHIL X AI</div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-btn" onclick="goTo('dashboard')">🏠</button>
+      <button class="nav-btn" onclick="goTo('chat-page')">💬 Chat</button>
+      <button class="nav-btn" onclick="goTo('admin-login')">🔐</button>
+    </nav>
+  </header>
+
+  <!-- JB Selector -->
+  <div id="jb-selector-view" style="flex:1;overflow-y:auto;">
+    <div class="dash-hero">
+      <div class="dash-tag">⚡ 🔥 ⚡</div>
+      <div class="dash-title" style="font-size:clamp(1.5rem,4vw,2.5rem);">Jailbreak Chat</div>
+      <div class="dash-sub">Special system prompts to unlock advanced AI capabilities~</div>
+    </div>
+    <div class="jb-models-grid" id="jb-models-grid"></div>
+    <footer class="footer">
+      <div>Made with ❤️ by <strong style="color:var(--cyan)">SAHIL X ALONE</strong> 🌸</div>
+      <div class="footer-links">
+        <a class="social-btn" href="https://t.me/sahilxalone" target="_blank">📱 Telegram</a>
+        <a class="social-btn" href="https://instagram.com/just_sahil_621" target="_blank">📸 Instagram</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- JB Chat -->
+  <div id="jb-chat-view" style="display:none;flex:1;flex-direction:column;height:calc(100vh - 58px);">
+    <div class="chat-layout" style="height:100%;">
+      <aside class="sidebar" id="jb-sidebar">
+        <div class="sidebar-header">
+          <div class="sb-title">⚡ JB Chats</div>
+          <button class="new-chat-btn" style="background:linear-gradient(135deg,var(--cyan),var(--blue))" onclick="newChat('jb')">+ New JB Chat</button>
+          <input class="sb-search" placeholder="🔍 Search..." oninput="renderHistory('jb')" id="search-jb"/>
+        </div>
+        <div class="model-selector">
+          <div class="model-label">⚡ JB Model</div>
+          <button class="model-btn active" onclick="selectModel('deepseek','jb')" id="model-deepseek-jb"><span class="dot"></span>🤖 DeepSeek JB</button>
+          <button class="model-btn" onclick="selectModel('gemini','jb')" id="model-gemini-jb"><span class="dot"></span>🔮 Gemini JB</button>
+          <button class="model-btn" onclick="selectModel('gpt5','jb')" id="model-gpt5-jb"><span class="dot"></span>⚡ GPT-5 JB</button>
+          <button class="model-btn" style="margin-top:0.5rem;color:var(--cyan);" onclick="showJbSelector()">← Back to Models</button>
+        </div>
+        <div class="chat-history" id="history-jb"></div>
+        <div class="sb-footer">
+          <div class="sb-stats">
+            <div class="sb-stat-row"><span>JB Requests</span><span class="sb-stat-val" id="sf-jb-total">0</span></div>
+            <div class="sb-stat-row"><span>Response</span><span class="sb-stat-val" id="sf-jb-rt">--ms</span></div>
+            <div class="sb-stat-row"><span>Model</span><span class="sb-stat-val" id="sf-jb-model">DeepSeek</span></div>
+          </div>
+        </div>
+      </aside>
+      <div class="chat-main">
+        <div class="chat-topbar">
+          <div class="model-info">
+            <div class="model-av" id="model-avatar-jb" style="background:linear-gradient(135deg,var(--cyan),var(--blue));box-shadow:var(--neon-cyan);">🤖</div>
+            <div>
+              <div class="model-nm" id="model-display-jb">DeepSeek JB</div>
+              <div class="model-st" style="color:var(--cyan);">⚡ Jailbreak Mode Active</div>
+            </div>
+          </div>
+          <div class="topbar-btns">
+            <button class="icon-btn" onclick="clearChat('jb')">🗑️</button>
+            <button class="icon-btn" onclick="exportChat('jb')">📤</button>
+          </div>
+        </div>
+        <div class="msgs-wrap" id="messages-jb">
+          <div class="empty-chat" id="empty-jb">
+            <div class="empty-icon">⚡</div>
+            <div class="empty-title">Jailbreak Mode Active~</div>
+            <div class="empty-sub">Advanced AI with custom system prompts. Ask anything! 🔥</div>
+          </div>
+        </div>
+        <div class="input-area">
+          <div class="input-wrap" style="border-color:rgba(6,182,212,0.25);">
+            <textarea class="chat-input" id="input-jb" placeholder="Message JB AI~ ⚡" rows="1"
+              onkeydown="handleKey(event,'jb')" oninput="autoResize(this)"></textarea>
+            <div class="input-btns">
+              <button class="att-btn" onclick="toast('🖼️ Coming soon!','success')">📎</button>
+              <button class="send-btn" id="send-jb" style="background:linear-gradient(135deg,var(--cyan),var(--blue));box-shadow:var(--neon-cyan);" onclick="sendMessage('jb')">➤</button>
+            </div>
+          </div>
+          <div class="input-foot">
+            <span id="char-jb"></span>
+            <span>⚡ Jailbreak · Enter = Send</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: ADMIN LOGIN -->
+<div class="page" id="admin-login">
+  <div class="login-card">
+    <div class="login-logo">🔐 ADMIN PANEL</div>
+    <div class="login-sub">SAHIL X AI Control Center</div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="admin-pw" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') adminLogin()"/>
+    </div>
+    <div class="login-error" id="login-error">❌ Wrong password!</div>
+    <button class="login-btn" onclick="adminLogin()">🔓 Login</button>
+    <button class="login-btn" style="background:var(--glass);border:1px solid var(--border);color:var(--text2);margin-top:0.5rem;" onclick="goTo('dashboard')">← Back</button>
+  </div>
+</div>
+
+<!-- PAGE: ADMIN PANEL -->
+<div class="page" id="admin-panel">
+  <div class="admin-header">
+    <div class="admin-title">🔐 Admin Panel · SAHIL X AI</div>
+    <button class="action-btn danger" onclick="adminLogout()">← Logout</button>
+  </div>
+  <div class="admin-body">
+    <div class="admin-tabs">
+      <button class="atab active" onclick="adminTab('analytics',event)">📊 Analytics</button>
+      <button class="atab" onclick="adminTab('jailbreak',event)">⚡ Jailbreak Manager</button>
+      <button class="atab" onclick="adminTab('logs',event)">📋 Logs</button>
+      <button class="atab" onclick="adminTab('health',event)">💚 API Health</button>
+    </div>
+    <div class="asec active" id="tab-analytics">
+      <div class="analytics-grid">
+        <div class="a-card"><div class="a-label">Total Requests</div><div class="a-val" id="an-total">0</div><div class="a-sub">All time</div></div>
+        <div class="a-card"><div class="a-label">Today</div><div class="a-val" id="an-today">0</div><div class="a-sub">Session</div></div>
+        <div class="a-card"><div class="a-label">Errors</div><div class="a-val" id="an-errors">0</div><div class="a-sub">Total</div></div>
+        <div class="a-card"><div class="a-label">Avg Response</div><div class="a-val" id="an-rt">--</div><div class="a-sub">milliseconds</div></div>
+        <div class="a-card"><div class="a-label">Success Rate</div><div class="a-val" id="an-success">100%</div><div class="a-sub">Reliability</div></div>
+      </div>
+      <table class="admin-table">
+        <thead><tr><th>Model</th><th>Requests</th><th>Avg Time</th><th>Status</th></tr></thead>
+        <tbody id="model-stats-table"></tbody>
+      </table>
+    </div>
+    <div class="asec" id="tab-jailbreak"><div class="jb-manager" id="jb-manager"></div></div>
+    <div class="asec" id="tab-logs">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h3 style="font-family:'Orbitron',monospace;font-size:0.85rem;color:var(--text2);">Error Logs</h3>
+        <button class="action-btn danger" onclick="clearLogs()">Clear</button>
+      </div>
+      <div id="logs-container"><div class="hist-empty">No errors 🎉</div></div>
+    </div>
+    <div class="asec" id="tab-health">
+      <h3 style="font-family:'Orbitron',monospace;font-size:0.85rem;color:var(--text2);margin-bottom:1rem;">API Health Monitor</h3>
+      <div id="health-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ CONFIG ══
+const ADMIN_PASSWORD = 'superadminaura@1234';
+const APIS = {
+  deepseek: 'https://api-rebix.vercel.app/api/deepseek-r1?q=',
+  gemini:   'https://api-rebix.vercel.app/api/gemini?q=',
+  gpt5:     'https://api-rebix.vercel.app/api/gpt-5?q='
+};
+const MODEL_INFO = {
+  deepseek: { name:'DeepSeek R1', emoji:'🤖' },
+  gemini:   { name:'Gemini',      emoji:'🔮' },
+  gpt5:     { name:'GPT-5',       emoji:'⚡' }
+};
+
+// ══ STATE ══
+let state = {
+  currentModel:{ normal:'deepseek', jb:'deepseek' },
+  chats:{ normal:{}, jb:{} },
+  currentChatId:{ normal:null, jb:null },
+  stats:{ total:0, today:0, responseTimes:[], errors:0, perModel:{deepseek:0,gemini:0,gpt5:0} },
+  jailbreaks:{
+    deepseek:{ enabled:false, prompt:'' },
+    gemini:  { enabled:false, prompt:'' },
+    gpt5:    { enabled:false, prompt:'' }
+  },
+  logs:[]
+};
+try{ const s=localStorage.getItem('sahilxai_v3'); if(s) Object.assign(state,JSON.parse(s)); }catch(e){}
+function saveState(){ try{ localStorage.setItem('sahilxai_v3',JSON.stringify(state)); }catch(e){} }
+
+// ══ PARTICLES ══
+(()=>{
+  const c=document.getElementById('particle-canvas'), ctx=c.getContext('2d');
+  let P=[];
+  const rz=()=>{ c.width=innerWidth; c.height=innerHeight; };
+  rz(); window.addEventListener('resize',rz);
+  for(let i=0;i<65;i++) P.push({
+    x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+    vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
+    r:Math.random()*1.7+.4,
+    col:['#8b5cf6','#3b82f6','#06b6d4','#ec4899','#a78bfa'][~~(Math.random()*5)],
+    a:Math.random()*.4+.1
+  });
+  (function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    P.forEach((p,i)=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=c.width; if(p.x>c.width)p.x=0;
+      if(p.y<0)p.y=c.height; if(p.y>c.height)p.y=0;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col+Math.floor(p.a*255).toString(16).padStart(2,'0'); ctx.fill();
+      P.slice(i+1).forEach(q=>{
+        const d=Math.hypot(p.x-q.x,p.y-q.y);
+        if(d<85){ ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle=`rgba(139,92,246,${.06*(1-d/85)})`; ctx.lineWidth=.5; ctx.stroke(); }
+      });
+    });
+    requestAnimationFrame(draw);
+  })();
+})();
+
+// ══ NAV ══
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>{ p.classList.remove('active'); p.style.display=''; });
+  const p=document.getElementById(id);
+  if(p){ p.classList.add('active'); p.style.display='flex'; }
+  if(id==='jailbreak-page') showJbSelector();
+  if(id==='admin-panel') refreshAdminUI();
+  if(id==='dashboard') updateDashStats();
+  if(id!=='welcome') document.getElementById('anime-mascot').style.display='block';
+}
+setTimeout(()=>goTo('dashboard'), 3100);
+
+// ══ SIDEBAR ══
+function toggleSidebar(id){
+  const s=document.getElementById(id), o=document.getElementById('sb-overlay');
+  s.classList.toggle('open'); o.classList.toggle('open');
+}
+function closeSidebars(){
+  document.querySelectorAll('.sidebar').forEach(s=>s.classList.remove('open'));
+  document.getElementById('sb-overlay').classList.remove('open');
+}
+
+// ══ MODEL SELECT ══
+function selectModel(model, mode){
+  state.currentModel[mode]=model;
+  document.querySelectorAll(`[id^="model-"][id$="-${mode}"]`).forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById(`model-${model}-${mode}`);
+  if(btn) btn.classList.add('active');
+  const info=MODEL_INFO[model];
+  const av=document.getElementById(`model-avatar-${mode}`); if(av) av.textContent=info.emoji;
+  const dp=document.getElementById(`model-display-${mode}`); if(dp) dp.textContent=mode==='jb'?info.name+' JB':info.name;
+  const sm=document.getElementById(`sf-${mode==='jb'?'jb-':''}model`); if(sm) sm.textContent=info.name;
+  saveState();
+}
+
+// ══ CHAT OPS ══
+const genId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+
+function newChat(mode){
+  const id=genId();
+  state.chats[mode][id]={ id, model:state.currentModel[mode], messages:[], created:Date.now(), title:'New Chat' };
+  state.currentChatId[mode]=id;
+  saveState(); renderHistory(mode); clearMsgs(mode);
+  if(window.innerWidth<=768) closeSidebars();
+  return id;
+}
+
+function clearMsgs(mode){
+  const m=document.getElementById(`messages-${mode}`), e=document.getElementById(`empty-${mode}`);
+  if(m){ m.innerHTML=''; if(e){ m.appendChild(e); e.style.display='flex'; } }
+}
+
+function getChat(mode){ const id=state.currentChatId[mode]; return id&&state.chats[mode][id]?state.chats[mode][id]:null; }
+
+function ensureChat(mode){
+  const c=getChat(mode); if(c) return c;
+  const id=newChat(mode); return state.chats[mode][id];
+}
+
+function renderHistory(mode){
+  const cont=document.getElementById(`history-${mode}`); if(!cont) return;
+  const q=(document.getElementById(`search-${mode}`)?.value||'').toLowerCase();
+  const chats=Object.values(state.chats[mode]).sort((a,b)=>b.created-a.created);
+  const list=q?chats.filter(c=>c.title.toLowerCase().includes(q)):chats;
+  if(!list.length){ cont.innerHTML='<div class="hist-empty">💬 No chats yet</div>'; return; }
+  cont.innerHTML=list.map(c=>`
+    <div class="hist-item ${state.currentChatId[mode]===c.id?'active':''}" onclick="loadChat('${mode}','${c.id}')">
+      ${MODEL_INFO[c.model]?.emoji||'💬'} ${escHtml(c.title)}
+      <button class="delbtn" onclick="event.stopPropagation();delChat('${mode}','${c.id}')">✕</button>
+    </div>`).join('');
+}
+
+function loadChat(mode, id){
+  state.currentChatId[mode]=id;
+  const chat=state.chats[mode][id]; if(!chat) return;
+  selectModel(chat.model, mode);
+  const m=document.getElementById(`messages-${mode}`), e=document.getElementById(`empty-${mode}`);
+  m.innerHTML='';
+  if(!chat.messages.length){ m.appendChild(e); e.style.display='flex'; }
+  else{ e.style.display='none'; chat.messages.forEach(msg=>appendMsg(mode,msg.role,msg.content,false)); }
+  renderHistory(mode);
+  if(window.innerWidth<=768) closeSidebars();
+}
+
+function delChat(mode, id){
+  delete state.chats[mode][id];
+  if(state.currentChatId[mode]===id){ state.currentChatId[mode]=null; clearMsgs(mode); }
+  saveState(); renderHistory(mode);
+}
+
+function clearChat(mode){
+  const id=state.currentChatId[mode];
+  if(id&&state.chats[mode][id]){ state.chats[mode][id].messages=[]; saveState(); }
+  clearMsgs(mode); toast('🗑️ Chat cleared','success');
+}
+
+// ══ SEND ══
+async function sendMessage(mode){
+  const inp=document.getElementById(`input-${mode}`);
+  const text=inp.value.trim(); if(!text) return;
+  inp.value=''; autoResize(inp);
+
+  const sendBtn=document.getElementById(`send-${mode}`);
+  sendBtn.disabled=true;
+
+  const chat=ensureChat(mode);
+  const empty=document.getElementById(`empty-${mode}`);
+  if(empty) empty.style.display='none';
+
+  if(!chat.messages.length) chat.title=text.slice(0,40)+(text.length>40?'…':'');
+  chat.messages.push({role:'user',content:text});
+  appendMsg(mode,'user',text);
+  renderHistory(mode);
+
+  // Typing indicator
+  const tid='t'+genId();
+  const msgsEl=document.getElementById(`messages-${mode}`);
+  const tEl=document.createElement('div');
+  tEl.id=tid; tEl.className='msg ai';
+  tEl.innerHTML=`<div class="msg-av">${MODEL_INFO[state.currentModel[mode]].emoji}</div>
+    <div class="msg-cnt"><div class="msg-bub">
+      <div class="typing-ind"><div class="tydot"></div><div class="tydot"></div><div class="tydot"></div></div>
+    </div></div>`;
+  msgsEl.appendChild(tEl); msgsEl.scrollTop=msgsEl.scrollHeight;
+
+  const t0=Date.now();
+  try{
+    let prompt=text;
+    let jbActive = false;
+    
+    // ✅ JB Mode: Prepend system prompt
+    if(mode==='jb'){
+      const jb=state.jailbreaks[state.currentModel[mode]];
+      if(jb && jb.enabled && jb.prompt){
+        prompt=jb.prompt+'\n\nUser: '+text;
+        jbActive = true;
+      }
+    }
+    
+    const url=APIS[state.currentModel[mode]]+encodeURIComponent(prompt);
+    const res=await fetch(url,{signal:AbortSignal.timeout(30000)});
+    const rt=Date.now()-t0;
+
+    let aiText='';
+    if(res.ok){
+      const data=await res.json();
+      aiText = data.response||data.answer||data.result||data.text||data.message||
+               data.content||
+               (data.choices&&data.choices[0]?.message?.content)||
+               (data.candidates&&data.candidates[0]?.content?.parts?.[0]?.text)||
+               (typeof data==='string'?data:JSON.stringify(data,null,2));
+    } else throw new Error(`API Error ${res.status}: ${res.statusText}`);
+
+    document.getElementById(tid)?.remove();
+    
+    // ✅ Add JB indicator to response if in JB mode
+    if(jbActive){
+      aiText = `⚡ **[Jailbreak Mode Active]**\n\n${aiText}`;
+    }
+    
+    chat.messages.push({role:'ai',content:aiText});
+    appendMsg(mode,'ai',aiText);
+
+    state.stats.total++; state.stats.today++;
+    state.stats.responseTimes.push(rt);
+    if(state.stats.responseTimes.length>50) state.stats.responseTimes.shift();
+    state.stats.perModel[state.currentModel[mode]]++;
+    updateSbStats(mode,rt); updateDashStats(); saveState();
+  } catch(err){
+    document.getElementById(tid)?.remove();
+    const errMsg=`⚠️ **Error:** ${err.message}\n\nPlease check your API connection or try again.`;
+    chat.messages.push({role:'ai',content:errMsg});
+    appendMsg(mode,'ai',errMsg);
+    state.stats.errors++;
+    state.logs.push({time:new Date().toLocaleTimeString(),msg:err.message,type:'error'});
+    if(state.logs.length>100) state.logs.shift();
+    saveState();
+  }
+  sendBtn.disabled=false;
+  renderHistory(mode);
+}
+
+function appendMsg(mode, role, content, scroll=true){
+  const msgsEl=document.getElementById(`messages-${mode}`);
+  const emptyEl=document.getElementById(`empty-${mode}`);
+  if(emptyEl) emptyEl.style.display='none';
+
+  const div=document.createElement('div');
+  div.className=`msg ${role}`;
+  const av=role==='ai'?MODEL_INFO[state.currentModel[mode]]?.emoji||'🤖':'🫵';
+  const rendered=role==='ai'?renderMd(content):escHtml(content).replace(/\n/g,'<br>');
+  const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+  div.innerHTML=`
+    <div class="msg-av">${av}</div>
+    <div class="msg-cnt">
+      <div class="msg-bub">${rendered}</div>
+      <div class="msg-time">${time}</div>
+      <div class="msg-acts">
+        <button class="act-btn" onclick="copyMsg(this)">📋 Copy</button>
+        ${role==='ai'?`<button class="act-btn" onclick="regenMsg('${mode}')">🔄 Retry</button>`:''}
+      </div>
+    </div>`;
+  msgsEl.appendChild(div);
+  div.querySelectorAll('pre code').forEach(b=>{ try{hljs.highlightElement(b);}catch(e){} });
+  if(scroll) msgsEl.scrollTop=msgsEl.scrollHeight;
+}
+
+function regenMsg(mode){
+  const chat=getChat(mode); if(!chat) return;
+  const lastUser=[...chat.messages].reverse().find(m=>m.role==='user');
+  if(!lastUser) return;
+  const i=chat.messages.findLastIndex(m=>m.role==='ai');
+  if(i>=0) chat.messages.splice(i,1);
+  clearMsgs(mode); chat.messages.forEach(m=>appendMsg(mode,m.role,m.content,false));
+  const j=chat.messages.findLastIndex(m=>m.role==='user');
+  if(j>=0) chat.messages.splice(j,1);
+  document.getElementById(`input-${mode}`).value=lastUser.content;
+  sendMessage(mode);
+}
+
+function copyMsg(btn){
+  const txt=btn.closest('.msg-cnt').querySelector('.msg-bub').innerText;
+  navigator.clipboard?.writeText(txt).then(()=>toast('📋 Copied!','success')).catch(()=>fallbackCopy(txt));
+  if(!navigator.clipboard) fallbackCopy(txt);
+}
+function fallbackCopy(t){ const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('📋 Copied!','success'); }
+function sendSugg(text, mode){ document.getElementById(`input-${mode}`).value=text; sendMessage(mode); }
+
+// ══ JB SELECTOR ══
+function showJbSelector(){
+  const sv=document.getElementById('jb-selector-view'), cv=document.getElementById('jb-chat-view');
+  if(sv){ sv.style.display='block'; sv.style.flex='1'; }
+  if(cv){ cv.style.display='none'; cv.style.flex=''; }
+  renderJbCards();
+}
+
+function renderJbCards(){
+  const grid=document.getElementById('jb-models-grid'); if(!grid) return;
+  grid.innerHTML=['deepseek','gemini','gpt5'].map(m=>{
+    const jb=state.jailbreaks[m], ok=jb.enabled&&jb.prompt, info=MODEL_INFO[m];
+    const prev=jb.prompt?jb.prompt.slice(0,70)+(jb.prompt.length>70?'...':''):'';
+    return `<div class="jb-card ${ok?'available':'locked'}">
+      <span class="jb-icon">${info.emoji}</span>
+      <div class="jb-name">${info.name}</div>
+      <div class="jb-badge ${ok?'ok':'no'}">${ok?'✅ Jailbreak Ready':'🕐 Not Configured'}</div>
+      ${prev?`<div class="jb-preview">${escHtml(prev)}</div>`:`<div style="font-size:0.72rem;color:var(--text3);margin-bottom:0.75rem;">Configure in Admin Panel first</div>`}
+      <button class="jb-start-btn" onclick="openJbChat('${m}')" ${ok?'':'disabled'}>
+        ${ok?'⚡ Start Chat':'Set Prompt in Admin'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function openJbChat(model){
+  const sv=document.getElementById('jb-selector-view'), cv=document.getElementById('jb-chat-view');
+  if(sv){ sv.style.display='none'; sv.style.flex=''; }
+  if(cv){ cv.style.display='flex'; cv.style.flex='1'; }
+  selectModel(model,'jb');
+  
+  // ✅ Ensure JB is enabled when opening chat
+  const jb = state.jailbreaks[model];
+  if(jb && jb.prompt) {
+    jb.enabled = true;
+    saveState();
+  }
+  
+  renderHistory('jb');
+  newChat('jb');
+  toast(`⚡ JB Mode Active: ${MODEL_INFO[model].name}`, 'success');
+}
+
+// ══ INPUT HELPERS ══
+function handleKey(e, mode){
+  const inp=document.getElementById(`input-${mode}`);
+  const charEl=document.getElementById(`char-${mode}`);
+  if(charEl) charEl.textContent=inp.value.length?`${inp.value.length} chars`:'';
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(mode); }
+}
+function autoResize(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+
+function exportChat(mode){
+  const chat=getChat(mode);
+  if(!chat||!chat.messages.length){ toast('No messages to export','error'); return; }
+  const txt=chat.messages.map(m=>`${m.role.toUpperCase()}:\n${m.content}`).join('\n\n---\n\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download=`sahilxai-${chat.id}.txt`; a.click();
+  toast('📤 Exported!','success');
+}
+
+// ══ STATS ══
+function updateSbStats(mode, rt){
+  const pre=mode==='jb'?'sf-jb-':'sf-';
+  const t=document.getElementById(`${pre}total`), r=document.getElementById(`${pre}rt`);
+  if(t) t.textContent=state.stats.total;
+  if(r) r.textContent=Math.round(rt)+'ms';
+}
+function updateDashStats(){
+  const t=document.getElementById('stat-total'), td=document.getElementById('stat-today'), r=document.getElementById('stat-rt');
+  if(t) t.textContent=state.stats.total;
+  if(td) td.textContent=state.stats.today;
+  const rts=state.stats.responseTimes;
+  if(r) r.textContent=rts.length?Math.round(rts.reduce((a,b)=>a+b,0)/rts.length):'--';
+}
+
+// ══ ADMIN ══
+function adminLogin(){
+  const pw=document.getElementById('admin-pw').value, err=document.getElementById('login-error');
+  if(pw===ADMIN_PASSWORD){ err.style.display='none'; goTo('admin-panel'); }
+  else{ err.style.display='block'; document.getElementById('admin-pw').value=''; }
+}
+function adminLogout(){ goTo('dashboard'); document.getElementById('admin-pw').value=''; }
+
+function adminTab(tab, evt){
+  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.asec').forEach(s=>s.classList.remove('active'));
+  if(evt?.target) evt.target.classList.add('active');
+  const sec=document.getElementById('tab-'+tab); if(sec) sec.classList.add('active');
+  if(tab==='health') checkHealth();
+}
+
+function refreshAdminUI(){
+  document.getElementById('an-total').textContent=state.stats.total;
+  document.getElementById('an-today').textContent=state.stats.today;
+  document.getElementById('an-errors').textContent=state.stats.errors;
+  const rts=state.stats.responseTimes;
+  const avg=rts.length?Math.round(rts.reduce((a,b)=>a+b,0)/rts.length)+'ms':'--';
+  document.getElementById('an-rt').textContent=avg;
+  const succ=state.stats.total>0?Math.round((1-state.stats.errors/state.stats.total)*100)+'%':'100%';
+  document.getElementById('an-success').textContent=succ;
+  document.getElementById('model-stats-table').innerHTML=Object.entries(MODEL_INFO).map(([k,v])=>`
+    <tr><td>${v.emoji} ${v.name}</td><td>${state.stats.perModel[k]||0}</td><td>${avg}</td>
+    <td><span style="color:var(--green);font-size:0.72rem;">🟢 Online</span></td></tr>`).join('');
+  renderJbManager();
+  const ld=document.getElementById('logs-container');
+  if(!state.logs.length){ ld.innerHTML='<div class="hist-empty">No errors 🎉</div>'; return; }
+  ld.innerHTML=state.logs.slice().reverse().map(l=>`
+    <div class="log-item ${l.type}">
+      <div class="log-time">${l.time}</div>
+      <div class="log-msg">${escHtml(l.msg)}</div>
+    </div>`).join('');
+}
+
+function renderJbManager(){
+  document.getElementById('jb-manager').innerHTML=Object.entries(MODEL_INFO).map(([k,v])=>{
+    const jb=state.jailbreaks[k];
+    return `<div class="jb-item">
+      <div class="jb-item-header">
+        <div class="jb-item-name">${v.emoji} ${v.name} <span class="jb-sbadge ${jb.enabled?'on':'off'}">${jb.enabled?'ON':'OFF'}</span></div>
+        <div class="jb-item-actions">
+          <button class="action-btn ${jb.enabled?'danger':'success'}" onclick="toggleJb('${k}')">${jb.enabled?'Disable':'Enable'}</button>
+          ${jb.prompt?`<button class="action-btn danger" onclick="delJbPrompt('${k}')">Delete</button>`:''}
+        </div>
+      </div>
+      <div style="font-size:0.76rem;color:var(--text2);margin-bottom:0.38rem;">System Prompt:</div>
+      <textarea class="jb-textarea" id="jbp-${k}" placeholder="Enter jailbreak system prompt for ${v.name}...">${escHtml(jb.prompt||'')}</textarea>
+      <button class="save-btn" onclick="saveJbPrompt('${k}')">💾 Save</button>
+    </div>`;
+  }).join('');
+}
+
+function toggleJb(m){ state.jailbreaks[m].enabled=!state.jailbreaks[m].enabled; saveState(); renderJbManager(); renderJbCards(); toast(`${state.jailbreaks[m].enabled?'✅':'❌'} ${MODEL_INFO[m].name} JB`,'success'); }
+function saveJbPrompt(m){ const v=document.getElementById(`jbp-${m}`).value.trim(); state.jailbreaks[m].prompt=v; saveState(); renderJbManager(); renderJbCards(); toast(`💾 ${MODEL_INFO[m].name} saved!`,'success'); }
+function delJbPrompt(m){ state.jailbreaks[m].prompt=''; state.jailbreaks[m].enabled=false; saveState(); renderJbManager(); renderJbCards(); toast(`🗑️ Deleted`,'success'); }
+function clearLogs(){ state.logs=[]; saveState(); refreshAdminUI(); toast('🗑️ Logs cleared','success'); }
+
+async function checkHealth(){
+  const grid=document.getElementById('health-grid');
+  grid.innerHTML=Object.entries(APIS).map(([k])=>`
+    <div class="jb-item" id="hlt-${k}">
+      <div style="display:flex;align-items:center;gap:0.7rem;">
+        <span style="font-size:1.4rem;">${MODEL_INFO[k].emoji}</span>
+        <div>
+          <div style="font-weight:600;font-size:0.86rem;">${MODEL_INFO[k].name}</div>
+          <div style="font-size:0.7rem;color:var(--text3);" id="hsub-${k}">Checking...</div>
+        </div>
+        <div style="margin-left:auto;" id="hbadge-${k}">⏳</div>
+      </div>
+    </div>`).join('');
+  for(const [k,url] of Object.entries(APIS)){
+    const s=Date.now();
+    try{
+      await fetch(url+encodeURIComponent('ping'),{signal:AbortSignal.timeout(8000)});
+      const rt=Date.now()-s;
+      document.getElementById('hbadge-'+k).innerHTML=`<span style="color:var(--green);font-size:0.72rem;">🟢 ${rt}ms</span>`;
+      document.getElementById('hsub-'+k).textContent=`Online · ${rt}ms`;
+    }catch(e){
+      document.getElementById('hbadge-'+k).innerHTML=`<span style="color:var(--red);font-size:0.72rem;">🔴 Offline</span>`;
+      document.getElementById('hsub-'+k).textContent='Unreachable';
+    }
+  }
+}
+
+// ══ MARKDOWN ══
+function renderMd(text){
+  try{ if(typeof marked!=='undefined'){ marked.setOptions({breaks:true,gfm:true}); return marked.parse(text); } }catch(e){}
+  return escHtml(text).replace(/\n/g,'<br>');
+}
+function escHtml(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ══ TOAST ══
+function toast(msg, type='success'){
+  const tc=document.getElementById('toast-container'), t=document.createElement('div');
+  t.className=`toast ${type}`; t.textContent=msg; tc.appendChild(t); setTimeout(()=>t.remove(),3200);
+}
+
+// ══ INIT ══
+function init(){
+  renderHistory('normal'); renderHistory('jb');
+  renderJbCards(); updateDashStats();
+  selectModel(state.currentModel.normal,'normal');
+  selectModel(state.currentModel.jb,'jb');
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
