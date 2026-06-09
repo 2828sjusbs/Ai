@@ -1,8 +1,3 @@
-/**
- * SAHIL X AI — Backend Server
- * Author: SAHIL X ALONE
- */
-
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -12,19 +7,23 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve the main app
+// Serve root files
+app.use(express.static(__dirname));
+
+// Home page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString()
+  });
 });
 
 app.listen(PORT, () => {
-  console.log(`\n🚀 SAHIL X AI Server running on http://localhost:${PORT}`);
-  console.log(`📱 Open http://localhost:${PORT} in your browser\n`);
+  console.log(`🚀 SAHIL X AI running on port ${PORT}`);
 });
